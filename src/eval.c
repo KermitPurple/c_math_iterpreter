@@ -33,8 +33,10 @@ static BinaryOp get_operator(TokenType type){
     }
 }
 
+// forward declaration to use expression
 static Result expression(TokenIter* iter);
 
+// return the shortest expression it can without breaking groupings like parentheses
 static Result shortest_expression(TokenIter* iter){
     Result r;
     int num;
@@ -60,6 +62,7 @@ static Result shortest_expression(TokenIter* iter){
     }
 }
 
+// get the operator and evaluate the second operand
 static Result partial_expression(TokenIter* iter, int a){
     Result r;
     BinaryOp op = get_operator(iter->current->type);
@@ -85,6 +88,7 @@ static Result partial_expression(TokenIter* iter, int a){
     }
 }
 
+// get the longest expression possible
 static Result expression(TokenIter* iter){
     if(iter->error){
         FAIL;
@@ -97,6 +101,7 @@ static Result expression(TokenIter* iter){
     return r;
 }
 
+// evaluate a string in infix notation
 Result eval(char* string){
     TokenIter* iter = token_iter_new(string);
     Result result = expression(iter);
