@@ -90,6 +90,26 @@ bool iterate(TokenIter* iter){
     return true;
 }
 
+bool is_add_operator(TokenType type){
+    switch(type){
+        case ADD:
+        case SUB:
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool is_mul_operator(TokenType type){
+    switch(type){
+        case MUL:
+        case DIV:
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool is_operator(TokenType type){
     switch(type){
         case ADD:

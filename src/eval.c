@@ -33,45 +33,68 @@ static BinaryOp get_operator(TokenType type){
     }
 }
 
+static Result expression(TokenIter* iter);
+
+static Result shortest_expression(TokenIter* iter){
+    Result r;
+    int num;
+    switch(iter->current->type){
+        case INT:
+            num = iter->current->num;
+            iterate(iter);
+            SUCCEED(num);
+        case SUB:
+            iterate(iter);
+            r = shortest_expression(iter);
+            CHECK(r);
+            SUCCEED(-r.value);
+        case L_PAREN:
+            iterate(iter);
+            r = expression(iter);
+            if(iter->current->type != R_PAREN){
+                FAIL;
+            }
+            iterate(iter);
+            return r;
+        default: FAIL;
+    }
+}
+
+static Result partial_expression(TokenIter* iter, int a){
+    Result r;
+    BinaryOp op = get_operator(iter->current->type);
+    if(op == NULL){
+        FAIL;
+    }
+    if(is_add_operator(iter->current->type)){
+        iterate(iter);
+        r = expression(iter);
+        CHECK(r);
+        SUCCEED(op(a, r.value));
+    }else{  // mul op
+        iterate(iter);
+        r = shortest_expression(iter);
+        CHECK(r);
+        int mul_res = op(a, r.value);
+        if(iter->next->type == END || iter->next->type == R_PAREN){
+            SUCCEED(mul_res);
+        }else{
+            r = partial_expression(iter, mul_res);
+        }
+        return r;
+    }
+}
+
 static Result expression(TokenIter* iter){
     if(iter->error){
         FAIL;
     }
-    Result result;
-    int a;
-    switch(iter->current->type){
-        case SUB:
-            iterate(iter);
-            result = expression(iter);
-            CHECK(result);
-            SUCCEED(-result.value);
-        case L_PAREN:
-            iterate(iter);
-            result = expression(iter);
-            if(iter->next->type != R_PAREN){
-                FAIL;
-            }
-            iterate(iter);
-            return result;
-        case INT:
-            a = iter->current->num;
-            if(is_operator(iter->next->type)){
-                iterate(iter);
-                BinaryOp op = get_operator(iter->current->type);
-                if(op == NULL){
-                    FAIL;
-                }
-                iterate(iter);
-                result = expression(iter);
-                CHECK(result);
-                SUCCEED(op(a, result.value));
-            }else if(iter->next->type != END){
-                FAIL;
-            }
-            SUCCEED(a);
-        default:
-            FAIL;
+    Result r = shortest_expression(iter);
+    CHECK(r);
+    if(iter->current->type != END && iter->current->type != R_PAREN){
+        r = partial_expression(iter, r.value);
     }
+    return r;
 }
 
 Result eval(char* string){

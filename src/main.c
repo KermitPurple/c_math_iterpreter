@@ -8,13 +8,19 @@ int main(){
     size_t capacity = 0;
     while(1){
         printf("calc> ");
-        if(getline(&line, &capacity, stdin) == EOF){
+        if(
+            getline(&line, &capacity, stdin) == EOF ||
+            strcmp(line, "quit\n") == 0 ||
+            strcmp(line, "q\n") == 0
+        ){
             break;
         }
         line[strlen(line) - 1] = '\0'; // get rid of newline
-        if(strcmp(line, "quit\n") == 0 || strcmp(line, "q\n") == 0){
-            break;
-        }
+        TokenIter* iter = token_iter_new(line);
+        do{
+            print_token(iter->current);
+        }while(iterate(iter));
+        putchar('\n');
         Result r = eval(line);
         if(r.success){
             printf("%s = %d\n", line, r.value);
