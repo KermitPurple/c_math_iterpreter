@@ -16,11 +16,6 @@ int main(){
             break;
         }
         line[strlen(line) - 1] = '\0'; // get rid of newline
-        TokenIter* iter = token_iter_new(line);
-        do{
-            print_token(iter->current);
-        }while(iterate(iter));
-        putchar('\n');
         Result r = eval(line);
         if(r.success){
             printf("%s = %d\n", line, r.value);
