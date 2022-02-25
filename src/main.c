@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include"token.h"
+#include"eval.h"
 
 int main(){
     char* line = NULL;
@@ -11,15 +11,16 @@ int main(){
         if(getline(&line, &capacity, stdin) == EOF){
             break;
         }
+        line[strlen(line) - 1] = '\0'; // get rid of newline
         if(strcmp(line, "quit\n") == 0 || strcmp(line, "q\n") == 0){
             break;
         }
-        TokenIter* iter = token_iter_new(line);
-        do{
-            print_token(iter->current);
-            putchar('\n');
-        }while(iterate(iter));
-        free(iter);
+        Result r = eval(line);
+        if(r.success){
+            printf("%s = %d\n", line, r.value);
+        }else{
+            printf("Invalid expression \"%s\"\n", line);
+        }
     }
     free(line);
     return 0;

@@ -31,8 +31,8 @@ static Token* get_next(TokenIter* iter){
     int buffer_index = 0;
     char buffer[256] = "";
     char ch;
-    while((ch = *iter->string)){
-        iter->string++;
+    while(1){
+        ch = *iter->string++;
         switch(state){
             case GENERAL:
                 if(isdigit(ch)){
@@ -59,6 +59,9 @@ static Token* get_next(TokenIter* iter){
                 }else if(ch == '/'){
                     result->type = DIV;
                     return result;
+                }else if(ch == '\0'){
+                    result->type = END;
+                    return result;
                 }else{
                     iter->error = true;
                     return NULL;
@@ -76,8 +79,6 @@ static Token* get_next(TokenIter* iter){
                 break;
         }
     }
-    result->type = END;
-    return result;
 }
 
 bool iterate(TokenIter* iter){
@@ -87,6 +88,18 @@ bool iterate(TokenIter* iter){
     iter->current = iter->next;
     iter->next = get_next(iter);
     return true;
+}
+
+bool is_operator(TokenType type){
+    switch(type){
+        case ADD:
+        case SUB:
+        case MUL:
+        case DIV:
+            return true;
+        default:
+            return false;
+    }
 }
 
 TokenIter* token_iter_new(char* string){

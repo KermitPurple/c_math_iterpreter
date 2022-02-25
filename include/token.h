@@ -28,6 +28,7 @@ typedef struct{
 
 TokenIter* token_iter_new(char* string);
 bool iterate(TokenIter* iter);
+bool is_operator(TokenType);
 void print_token(Token*);
 
 #endif // TOKEN_H
