@@ -10,14 +10,14 @@ typedef enum{
 
 static const char* token_type_to_string(TokenType type){
     switch(type){
-        case L_PAREN: return "L_PAREN";
-        case R_PAREN: return "R_PAREN";
-        case INT: return "INT";
-        case ADD: return "ADD";
-        case SUB: return "SUB";
-        case MUL: return "MUL";
-        case DIV: return "DIV";
-        case END: return "END";
+        case L_PAREN_TOKEN: return "L_PAREN";
+        case R_PAREN_TOKEN: return "R_PAREN";
+        case INT_TOKEN: return "INT";
+        case ADD_TOKEN: return "ADD";
+        case SUB_TOKEN: return "SUB";
+        case MUL_TOKEN: return "MUL";
+        case DIV_TOKEN: return "DIV";
+        case END_TOKEN: return "END";
         default: return "";
     }
 }
@@ -42,25 +42,25 @@ static Token* get_next(TokenIter* iter){
                 }else if(isspace(ch)){
                     continue;
                 }else if(ch == '('){
-                    result->type = L_PAREN;
+                    result->type = L_PAREN_TOKEN;
                     return result;
                 }else if(ch == ')'){
-                    result->type = R_PAREN;
+                    result->type = R_PAREN_TOKEN;
                     return result;
                 }else if(ch == '+'){
-                    result->type = ADD;
+                    result->type = ADD_TOKEN;
                     return result;
                 }else if(ch == '-'){
-                    result->type = SUB;
+                    result->type = SUB_TOKEN;
                     return result;
                 }else if(ch == '*'){
-                    result->type = MUL;
+                    result->type = MUL_TOKEN;
                     return result;
                 }else if(ch == '/'){
-                    result->type = DIV;
+                    result->type = DIV_TOKEN;
                     return result;
                 }else if(ch == '\0'){
-                    result->type = END;
+                    result->type = END_TOKEN;
                     return result;
                 }else{
                     iter->error = true;
@@ -70,7 +70,7 @@ static Token* get_next(TokenIter* iter){
             case NUMBER:
                 if(!isdigit(ch)){
                     iter->string--;
-                    result->type = INT;
+                    result->type = INT_TOKEN;
                     result->num = atoi(buffer);
                     return result;
                 }else{
@@ -82,7 +82,7 @@ static Token* get_next(TokenIter* iter){
 }
 
 bool iterate(TokenIter* iter){
-    if(iter->error || iter->current->type == END){
+    if(iter->error || iter->current->type == END_TOKEN){
         return false;
     }
     iter->current = iter->next;
@@ -92,8 +92,8 @@ bool iterate(TokenIter* iter){
 
 bool is_add_operator(TokenType type){
     switch(type){
-        case ADD:
-        case SUB:
+        case ADD_TOKEN:
+        case SUB_TOKEN:
             return true;
         default:
             return false;
@@ -102,8 +102,8 @@ bool is_add_operator(TokenType type){
 
 bool is_mul_operator(TokenType type){
     switch(type){
-        case MUL:
-        case DIV:
+        case MUL_TOKEN:
+        case DIV_TOKEN:
             return true;
         default:
             return false;
@@ -112,10 +112,10 @@ bool is_mul_operator(TokenType type){
 
 bool is_operator(TokenType type){
     switch(type){
-        case ADD:
-        case SUB:
-        case MUL:
-        case DIV:
+        case ADD_TOKEN:
+        case SUB_TOKEN:
+        case MUL_TOKEN:
+        case DIV_TOKEN:
             return true;
         default:
             return false;
@@ -137,7 +137,7 @@ TokenIter* token_iter_new(char* string){
 void print_token(Token* token){
     const char* type_string = token_type_to_string(token->type);
     switch(token->type){
-        case INT:
+        case INT_TOKEN:
             printf("<%s %d>", type_string, token->num);
             break;
         default:

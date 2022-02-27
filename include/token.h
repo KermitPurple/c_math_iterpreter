@@ -4,14 +4,14 @@
 #include<stdbool.h>
 
 typedef enum{
-    L_PAREN,
-    R_PAREN,
-    INT,
-    ADD,
-    SUB,
-    MUL,
-    DIV,
-    END,
+    L_PAREN_TOKEN,
+    R_PAREN_TOKEN,
+    INT_TOKEN,
+    ADD_TOKEN,
+    SUB_TOKEN,
+    MUL_TOKEN,
+    DIV_TOKEN,
+    END_TOKEN,
 }TokenType;
 
 typedef struct{

@@ -28,10 +28,10 @@ static int _div(int a, int b){
 
 static BinaryOp get_operator(TokenType type){
     switch(type){
-        case ADD: return &add;
-        case SUB: return &sub;
-        case MUL: return &mul;
-        case DIV: return &_div;
+        case ADD_TOKEN: return &add;
+        case SUB_TOKEN: return &sub;
+        case MUL_TOKEN: return &mul;
+        case DIV_TOKEN: return &_div;
         default: return NULL;
     }
 }
@@ -44,19 +44,19 @@ static Result shortest_expression(TokenIter* iter){
     Result r;
     int num;
     switch(iter->current->type){
-        case INT:
+        case INT_TOKEN:
             num = iter->current->num;
             iterate(iter);
             SUCCEED(num);
-        case SUB:
+        case SUB_TOKEN:
             iterate(iter);
             r = shortest_expression(iter);
             CHECK(r);
             SUCCEED(-r.value);
-        case L_PAREN:
+        case L_PAREN_TOKEN:
             iterate(iter);
             r = expression(iter);
-            if(iter->current->type != R_PAREN){
+            if(iter->current->type != R_PAREN_TOKEN){
                 FAIL;
             }
             iterate(iter);
@@ -82,7 +82,7 @@ static Result partial_expression(TokenIter* iter, int a){
         r = shortest_expression(iter);
         CHECK(r);
         int mul_res = op(a, r.value);
-        if(iter->next->type == END || iter->next->type == R_PAREN){
+        if(iter->next->type == END_TOKEN || iter->next->type == R_PAREN_TOKEN){
             SUCCEED(mul_res);
         }else{
             r = partial_expression(iter, mul_res);
@@ -98,7 +98,7 @@ static Result expression(TokenIter* iter){
     }
     Result r = shortest_expression(iter);
     CHECK(r);
-    if(iter->current->type != END && iter->current->type != R_PAREN){
+    if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
         r = partial_expression(iter, r.value);
     }
     return r;
