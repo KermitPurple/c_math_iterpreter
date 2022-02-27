@@ -1,8 +1,11 @@
 #include<stdlib.h>
 #include"eval.h"
 
+// Fail in a function that returns a Result
 #define FAIL return (Result){false, 0}
+// Succeed in a function that returns a Result
 #define SUCCEED(x) return (Result){true, x}
+// Check if a result has !success and FAIL if it does
 #define CHECK(x) if(!x.success) FAIL
 
 typedef int (*BinaryOp)(int, int);
