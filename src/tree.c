@@ -67,7 +67,7 @@ static Node* partial_expression(TokenIter* iter, Node* left){
         CHECK_NULL(node->right);
     }else{  // mul op
         iterate(iter);
-        node->right = expression(iter);
+        node->right = shortest_expression(iter);
         CHECK_NULL(node->right);
         if(iter->next->type != END_TOKEN && iter->next->type != R_PAREN_TOKEN){
             node = partial_expression(iter, node);
@@ -157,7 +157,10 @@ void free_node(Node* node){
 Node* tree_from_string(char* string){
     TokenIter* iter = token_iter_new(string);
     Node* node = expression(iter);
+#ifdef DEBUG
     print_node(node);
+    putchar('\n');
+#endif // DEBUG
     free(iter);
     return node;
 }

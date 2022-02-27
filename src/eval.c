@@ -38,10 +38,33 @@ static BinaryOp get_operator(NodeType type){
     }
 }
 
+static Result eval_tree(Node* node){
+    if(node == NULL){
+        FAIL;
+    }
+    BinaryOp operator = get_operator(node->type);
+    if(operator != NULL){ // is binary operator
+        Result left = eval_tree(node->left);
+        CHECK(left);
+        Result right = eval_tree(node->right);
+        CHECK(right);
+        SUCCEED(operator(left.value, right.value));
+    } else if(node->type == NEG_NODE){
+        Result next = eval_tree(node->next);
+        CHECK(next);
+        SUCCEED(-next.value);
+    } else if(node->type == INT_NODE){
+        SUCCEED(node->num);
+    }else{
+        FAIL;
+    }
+}
+
 // evaluate a string in infix notation
 Result eval(char* string){
+    Result result;
     Node* node = tree_from_string(string);
-    // TODO evaluate value
-    free(node);
-    SUCCEED(10);
+    result = eval_tree(node);
+    free_node(node);
+    return result;
 }

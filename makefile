@@ -5,7 +5,7 @@ TARGET=bin/test# the output file
 DBG_TARGET=$(TARGET).debug
 CFLAGS=-Wextra -Iinclude -fsanitize=address# flags to be passed to compiler
 LIBS=# librarys to link
-DBG_FLAGS=-g# flags for debugging
+DBG_FLAGS=-g -DDEBUG# flags for debugging
 DEBUGGER=lldb# debugger to use
 ifeq ("$(wildcard src/*$(EXTENSION))", "")# if there are no c files
 	CC=clang++# c++ compiler
