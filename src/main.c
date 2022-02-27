@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include"tree.h"
 #include"eval.h"
 
 int main(){
@@ -16,6 +17,8 @@ int main(){
             break;
         }
         line[strlen(line) - 1] = '\0'; // get rid of newline
+        tree_from_string(line);
+        putchar('\n');
         Result r = eval(line);
         if(r.success){
             printf("%s = %d\n", line, r.value);
