@@ -28,6 +28,7 @@ typedef struct Node{
     };
 }Node;
 
+void free_node(Node* node);
 void print_node(Node* node);
 Node* tree_from_string(char* string);
 

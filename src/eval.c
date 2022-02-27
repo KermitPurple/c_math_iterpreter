@@ -1,5 +1,6 @@
 #include<stdlib.h>
 #include"eval.h"
+#include"tree.h"
 
 // Fail in a function that returns a Result
 #define FAIL return (Result){false, 0}
@@ -22,92 +23,25 @@ static int mul(int a, int b){
     return a * b;
 }
 
+// div has a name collision
 static int _div(int a, int b){
     return a / b;
 }
 
-static BinaryOp get_operator(TokenType type){
+static BinaryOp get_operator(NodeType type){
     switch(type){
-        case ADD_TOKEN: return &add;
-        case SUB_TOKEN: return &sub;
-        case MUL_TOKEN: return &mul;
-        case DIV_TOKEN: return &_div;
+        case ADD_NODE: return &add;
+        case SUB_NODE: return &sub;
+        case MUL_NODE: return &mul;
+        case DIV_NODE: return &_div;
         default: return NULL;
     }
 }
 
-// forward declaration to use expression
-static Result expression(TokenIter* iter);
-
-// return the shortest expression it can without breaking groupings like parentheses
-static Result shortest_expression(TokenIter* iter){
-    Result r;
-    int num;
-    switch(iter->current->type){
-        case INT_TOKEN:
-            num = iter->current->num;
-            iterate(iter);
-            SUCCEED(num);
-        case SUB_TOKEN:
-            iterate(iter);
-            r = shortest_expression(iter);
-            CHECK(r);
-            SUCCEED(-r.value);
-        case L_PAREN_TOKEN:
-            iterate(iter);
-            r = expression(iter);
-            if(iter->current->type != R_PAREN_TOKEN){
-                FAIL;
-            }
-            iterate(iter);
-            return r;
-        default: FAIL;
-    }
-}
-
-// get the operator and evaluate the second operand
-static Result partial_expression(TokenIter* iter, int a){
-    Result r;
-    BinaryOp op = get_operator(iter->current->type);
-    if(op == NULL){
-        FAIL;
-    }
-    if(is_add_operator(iter->current->type)){
-        iterate(iter);
-        r = expression(iter);
-        CHECK(r);
-        SUCCEED(op(a, r.value));
-    }else{  // mul op
-        iterate(iter);
-        r = shortest_expression(iter);
-        CHECK(r);
-        int mul_res = op(a, r.value);
-        if(iter->next->type == END_TOKEN || iter->next->type == R_PAREN_TOKEN){
-            SUCCEED(mul_res);
-        }else{
-            r = partial_expression(iter, mul_res);
-        }
-        return r;
-    }
-}
-
-// get the longest expression possible
-static Result expression(TokenIter* iter){
-    if(iter->error){
-        FAIL;
-    }
-    Result r = shortest_expression(iter);
-    CHECK(r);
-    if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-        r = partial_expression(iter, r.value);
-    }
-    return r;
-}
-
 // evaluate a string in infix notation
 Result eval(char* string){
-    TokenIter* iter = token_iter_new(string);
-    Result result = expression(iter);
-    free(iter);
-    return result;
+    Node* node = tree_from_string(string);
+    // TODO evaluate value
+    free(node);
+    SUCCEED(10);
 }

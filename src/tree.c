@@ -134,9 +134,30 @@ void print_node(Node* node){
     }
 }
 
+void free_node(Node* node){
+    if(node == NULL){
+        return;
+    }
+    switch(node->type){
+        case ADD_NODE:
+        case SUB_NODE:
+        case MUL_NODE:
+        case DIV_NODE:
+            free_node(node->left);
+            free_node(node->right);
+            break;
+        case NEG_NODE:
+            print_node(node->next);
+            break;
+        default: break;
+    }
+    free(node);
+}
+
 Node* tree_from_string(char* string){
     TokenIter* iter = token_iter_new(string);
     Node* node = expression(iter);
     print_node(node);
     free(iter);
+    return node;
 }
