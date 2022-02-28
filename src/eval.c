@@ -55,9 +55,8 @@ static Result eval_tree(Node* node){
         SUCCEED(-next.value);
     } else if(node->type == INT_NODE){
         SUCCEED(node->num);
-    }else{
-        FAIL;
     }
+    FAIL;
 }
 
 // evaluate a string in infix notation
