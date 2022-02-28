@@ -147,7 +147,7 @@ void free_node(Node* node){
             free_node(node->right);
             break;
         case NEG_NODE:
-            print_node(node->next);
+            free_node(node->next);
             break;
         default: break;
     }
