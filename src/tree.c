@@ -156,8 +156,12 @@ void free_node(Node* node){
 
 Node* tree_from_string(char* string){
     TokenIter* iter = token_iter_new(string);
+#ifdef DEBUG
+    printf("TOKENS: ");
+#endif // DEBUG
     Node* node = expression(iter);
 #ifdef DEBUG
+    printf("\nTREE: ");
     print_node(node);
     putchar('\n');
 #endif // DEBUG

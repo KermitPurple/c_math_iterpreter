@@ -85,6 +85,9 @@ bool iterate(TokenIter* iter){
     if(iter->error || iter->current->type == END_TOKEN){
         return false;
     }
+#ifdef DEBUG
+    print_token(iter->current);
+#endif // DEBUG
     iter->current = iter->next;
     iter->next = get_next(iter);
     return true;
