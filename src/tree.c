@@ -39,43 +39,45 @@ static Node* shortest_expression(TokenIter* iter){
 }
 
 // get the operator and evaluate the second operand
-static Node* partial_expression(TokenIter* iter, Node* left){
+// https://en.wikipedia.org/wiki/Operator-precedence_parser
+// Shamelessly stolen I'm just happy this works
+static Node* partial_expression(TokenIter* iter, Node* left, int min_precedence){
     CHECK_NULL(left);
-    Node* node = malloc(sizeof(Node));
-    CHECK_NULL(node);
-    node->left = left;
-    TokenType op = iter->current->type;
-    switch(op){
-        case ADD_TOKEN:
-            node->type = ADD_NODE;
-            break;
-        case SUB_TOKEN:
-            node->type = SUB_NODE;
-            break;
-        case MUL_TOKEN:
-            node->type = MUL_NODE;
-            break;
-        case DIV_TOKEN:
-            node->type = DIV_NODE;
-            break;
-        case END_TOKEN:
-        case L_PAREN_TOKEN:
-            free(node);
-            return left;
-        default:
-            free(node);
-            return NULL;
+    while(is_operator(iter->current->type) && get_precedence(iter->current->type) >= min_precedence){
+        TokenType op = iter->current->type;
+        iterate(iter);
+        Node* right = shortest_expression(iter);
+        while(is_operator(iter->current->type) && get_precedence(iter->current->type) > get_precedence(op)){
+            right = partial_expression(iter, right, min_precedence + 1);
+        }
+        Node* node = malloc(sizeof(Node));
+        CHECK_NULL(node);
+        node->left = left;
+        node->right = right;
+        switch(op){
+            case ADD_TOKEN:
+                node->type = ADD_NODE;
+                break;
+            case SUB_TOKEN:
+                node->type = SUB_NODE;
+                break;
+            case MUL_TOKEN:
+                node->type = MUL_NODE;
+                break;
+            case DIV_TOKEN:
+                node->type = DIV_NODE;
+                break;
+            case END_TOKEN:
+            case L_PAREN_TOKEN:
+                free(node);
+                return left;
+            default:
+                free(node);
+                return NULL;
+        }
+        left = node;
     }
-    iterate(iter);
-    Node* next = shortest_expression(iter);
-    if(is_operator(iter->current->type) && get_precedence(iter->current->type) > get_precedence(op)){
-        node->right = partial_expression(iter, next);
-    }else{
-        node->right = next;
-    }
-    CHECK_NULL(node->right);
-    node = partial_expression(iter, node);
-    return node;
+    return left;
 }
 
 // get the longest expression possible
@@ -85,7 +87,7 @@ static Node* expression(TokenIter* iter){
     }
     Node* node = shortest_expression(iter);
     CHECK_NULL(node);
-    return partial_expression(iter, node);
+    return partial_expression(iter, node, 0);
 }
 
 void print_node(Node* node){
