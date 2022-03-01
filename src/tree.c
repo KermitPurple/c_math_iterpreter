@@ -40,8 +40,10 @@ static Node* shortest_expression(TokenIter* iter){
 
 // get the operator and evaluate the second operand
 static Node* partial_expression(TokenIter* iter, Node* left){
+    CHECK_NULL(left);
     Node* node = malloc(sizeof(Node));
     CHECK_NULL(node);
+    node->left = left;
     TokenType op = iter->current->type;
     switch(op){
         case ADD_TOKEN:
@@ -64,7 +66,6 @@ static Node* partial_expression(TokenIter* iter, Node* left){
             free(node);
             return NULL;
     }
-    node->left = left;
     iterate(iter);
     if(is_operator(iter->next->type) && get_precedence(iter->next->type) > get_precedence(op)){
         node->right = expression(iter);
