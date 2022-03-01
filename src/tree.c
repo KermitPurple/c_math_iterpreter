@@ -39,13 +39,11 @@ static Node* shortest_expression(TokenIter* iter){
 }
 
 // get the operator and evaluate the second operand
-// https://en.wikipedia.org/wiki/Operator-precedence_parser
-static Node* partial_expression(TokenIter* iter, Node* left, int min_precedence){
-    while(get_precedence(iter->current->type) >= min_precedence);
-    // old
+static Node* partial_expression(TokenIter* iter, Node* left){
     Node* node = malloc(sizeof(Node));
     CHECK_NULL(node);
-    switch(iter->current->type){
+    TokenType op = iter->current->type;
+    switch(op){
         case ADD_TOKEN:
             node->type = ADD_NODE;
             break;
@@ -58,18 +56,23 @@ static Node* partial_expression(TokenIter* iter, Node* left, int min_precedence)
         case DIV_TOKEN:
             node->type = DIV_NODE;
             break;
+        case END_TOKEN:
+        case L_PAREN_TOKEN:
+            free(node);
+            return left;
         default:
             free(node);
             return NULL;
-            break;
     }
     node->left = left;
-    // TODO actually parse order of operations right
     iterate(iter);
-    node->right = shortest_expression(iter);
-    CHECK_NULL(node->right);
-    if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-        node = partial_expression(iter, node, 0);
+    if(is_operator(iter->next->type) && get_precedence(iter->next->type) > get_precedence(op)){
+        node->right = expression(iter);
+        CHECK_NULL(node->right);
+    }else{
+        node->right = shortest_expression(iter);
+        CHECK_NULL(node->right);
+        node = partial_expression(iter, node);
     }
     return node;
 }
@@ -82,7 +85,7 @@ static Node* expression(TokenIter* iter){
     Node* node = shortest_expression(iter);
     CHECK_NULL(node);
     if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-        node = partial_expression(iter, node, 0);
+        node = partial_expression(iter, node);
     }
     return node;
 }
