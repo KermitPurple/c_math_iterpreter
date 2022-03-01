@@ -7,6 +7,17 @@
 // forward declaration to use expression
 static Node* expression(TokenIter* iter);
 
+static int get_precedence(NodeType type){
+    switch(type){
+        case ADD_NODE: return 1;
+        case SUB_NODE: return 1;
+        case MUL_NODE: return 2;
+        case DIV_NODE: return 2;
+        case NEG_NODE: return 3;
+        case INT_NODE: return 4;
+    }
+}
+
 // return the shortest expression it can without breaking groupings like parentheses
 static Node* shortest_expression(TokenIter* iter){
     int num;
