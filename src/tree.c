@@ -61,17 +61,12 @@ static Node* partial_expression(TokenIter* iter, Node* left){
             break;
     }
     node->left = left;
-    if(is_add_operator(iter->current->type)){
-        iterate(iter);
-        node->right = expression(iter);
-        CHECK_NULL(node->right);
-    }else{  // mul op
-        iterate(iter);
-        node->right = shortest_expression(iter);
-        CHECK_NULL(node->right);
-        if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-            node = partial_expression(iter, node);
-        }
+    // TODO actually parse order of operations right
+    iterate(iter);
+    node->right = shortest_expression(iter);
+    CHECK_NULL(node->right);
+    if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
+        node = partial_expression(iter, node);
     }
     return node;
 }
