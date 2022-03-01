@@ -7,17 +7,6 @@
 // forward declaration to use expression
 static Node* expression(TokenIter* iter);
 
-static int get_precedence(NodeType type){
-    switch(type){
-        case ADD_NODE: return 1;
-        case SUB_NODE: return 1;
-        case MUL_NODE: return 2;
-        case DIV_NODE: return 2;
-        case NEG_NODE: return 3;
-        case INT_NODE: return 4;
-    }
-}
-
 // return the shortest expression it can without breaking groupings like parentheses
 static Node* shortest_expression(TokenIter* iter){
     int num;
@@ -50,7 +39,10 @@ static Node* shortest_expression(TokenIter* iter){
 }
 
 // get the operator and evaluate the second operand
-static Node* partial_expression(TokenIter* iter, Node* left){
+// https://en.wikipedia.org/wiki/Operator-precedence_parser
+static Node* partial_expression(TokenIter* iter, Node* left, int min_precedence){
+    while(get_precedence(iter->current->type) >= min_precedence);
+    // old
     Node* node = malloc(sizeof(Node));
     CHECK_NULL(node);
     switch(iter->current->type){
@@ -77,7 +69,7 @@ static Node* partial_expression(TokenIter* iter, Node* left){
     node->right = shortest_expression(iter);
     CHECK_NULL(node->right);
     if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-        node = partial_expression(iter, node);
+        node = partial_expression(iter, node, 0);
     }
     return node;
 }
@@ -90,7 +82,7 @@ static Node* expression(TokenIter* iter){
     Node* node = shortest_expression(iter);
     CHECK_NULL(node);
     if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-        node = partial_expression(iter, node);
+        node = partial_expression(iter, node, 0);
     }
     return node;
 }

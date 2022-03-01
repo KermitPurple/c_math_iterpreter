@@ -147,3 +147,14 @@ void print_token(Token* token){
             printf("<%s>", type_string);
     }
 }
+
+int get_precedence(TokenType type){
+    switch(type){
+        case ADD_TOKEN: return 0;
+        case SUB_TOKEN: return 0;
+        case MUL_TOKEN: return 1;
+        case DIV_TOKEN: return 1;
+        default: return 0;
+    }
+}
+

@@ -32,5 +32,6 @@ bool is_add_operator(TokenType);
 bool is_mul_operator(TokenType);
 bool is_operator(TokenType);
 void print_token(Token*);
+int get_precedence(TokenType type);
 
 #endif // TOKEN_H
