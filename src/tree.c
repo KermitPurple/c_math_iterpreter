@@ -85,10 +85,7 @@ static Node* expression(TokenIter* iter){
     }
     Node* node = shortest_expression(iter);
     CHECK_NULL(node);
-    if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
-        node = partial_expression(iter, node);
-    }
-    return node;
+    return partial_expression(iter, node);
 }
 
 void print_node(Node* node){
