@@ -67,14 +67,14 @@ static Node* partial_expression(TokenIter* iter, Node* left){
             return NULL;
     }
     iterate(iter);
-    if(is_operator(iter->next->type) && get_precedence(iter->next->type) > get_precedence(op)){
-        node->right = expression(iter);
-        CHECK_NULL(node->right);
+    Node* next = shortest_expression(iter);
+    if(is_operator(iter->current->type) && get_precedence(iter->current->type) > get_precedence(op)){
+        node->right = partial_expression(iter, next);
     }else{
-        node->right = shortest_expression(iter);
-        CHECK_NULL(node->right);
-        node = partial_expression(iter, node);
+        node->right = next;
     }
+    CHECK_NULL(node->right);
+    node = partial_expression(iter, node);
     return node;
 }
 
