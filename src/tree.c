@@ -69,7 +69,7 @@ static Node* partial_expression(TokenIter* iter, Node* left){
         iterate(iter);
         node->right = shortest_expression(iter);
         CHECK_NULL(node->right);
-        if(iter->next->type != END_TOKEN && iter->next->type != R_PAREN_TOKEN){
+        if(iter->current->type != END_TOKEN && iter->current->type != R_PAREN_TOKEN){
             node = partial_expression(iter, node);
         }
     }
