@@ -110,14 +110,14 @@ void print_node(Node* node){
             printf(">");
             break;
         case MUL_NODE:
-            printf("<mul ");
+            printf("<MUL ");
             print_node(node->left);
             printf(" ");
             print_node(node->right);
             printf(">");
             break;
         case DIV_NODE:
-            printf("<mul ");
+            printf("<DIV ");
             print_node(node->left);
             printf(" ");
             print_node(node->right);
