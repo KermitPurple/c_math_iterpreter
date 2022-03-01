@@ -161,6 +161,10 @@ Node* tree_from_string(char* string){
     printf("TOKENS: ");
 #endif // DEBUG
     Node* node = expression(iter);
+    if(iter->current->type != END_TOKEN){
+        free(node);
+        node = NULL;
+    }
 #ifdef DEBUG
     printf("\nTREE: ");
     print_node(node);
