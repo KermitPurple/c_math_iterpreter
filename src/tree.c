@@ -9,6 +9,9 @@ static Node* expression(TokenIter* iter);
 
 // return the shortest expression it can without breaking groupings like parentheses
 static Node* shortest_expression(TokenIter* iter){
+    if(iter->error){
+        return NULL;
+    }
     int num;
     Node* node = NULL;
     switch(iter->current->type){
@@ -42,6 +45,9 @@ static Node* shortest_expression(TokenIter* iter){
 // https://en.wikipedia.org/wiki/Operator-precedence_parser
 // Shamelessly stolen I'm just happy this works
 static Node* partial_expression(TokenIter* iter, Node* left, int min_precedence){
+    if(iter->error){
+        return NULL;
+    }
     CHECK_NULL(left);
     while(is_operator(iter->current->type) && get_precedence(iter->current->type) >= min_precedence){
         TokenType op = iter->current->type;
